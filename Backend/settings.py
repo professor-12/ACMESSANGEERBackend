@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY= os.environ.get("SECRET_KEY")
+SECRET_KEY = 'django-insecure-0ct!ew2$bfyf1lb596-r*w@-f6^@0860gi6y$u6uc30--@)x0q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "FALSE") == "true"
+DEBUG = True
 
-ALLOWED_HOSTS = os.eviron.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -93,7 +93,9 @@ DATABASES = {
 }
 
 database_url = os.environ.get("DATABASE_URL")
-DATABASES['default'] = dj_database_url.parse(database_url)
+print(os.environ.get("DATABASE_URL"))
+DATABASES['default'] = dj_database_url.parse(
+    "postgres://acm_user:sjclWGxSZFVG09vuepOwDu1RYCiDfVXd@dpg-clav6pmg1b2c73a8lmh0-a.oregon-postgres.render.com/acm")
 
 # postgres://acm_user:sjclWGxSZFVG09vuepOwDu1RYCiDfVXd@dpg-clav6pmg1b2c73a8lmh0-a.oregon-postgres.render.com/acm
 
