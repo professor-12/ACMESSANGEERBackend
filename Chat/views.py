@@ -10,6 +10,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from .models import *
 from django.db.models import Q
 from rest_framework import status
+from .pusher import pusher_client
 
 
 @api_view(["POST"])
@@ -61,8 +62,14 @@ def POSTChatApi(req):
         req.data["sender"] = get_object_or_404(
             User, username=req.user.username).id
         serializedData = ChatSerializer(data=req.data)
+
         if serializedData.is_valid():
             serializedData.save()
+            message = Chat.objects.filter(Q(sender=req.data["sender"], reciever=req.data["reciever"]) | Q(
+                sender=req.data["reciever"], reciever=req.data["sender"])).order_by('date')
+            const = ChatSerializer(message, many=True)
+            pusher_client.trigger(u'chat', u'message',
+                                  const.data)
             return Response(serializedData.data)
         return Response(serializedData.errors)
 
@@ -125,7 +132,6 @@ def CreateContact(req):
         if i["contact"] == contact.pk:
             return Response("User is already your contact")
 
-    print(req.data)
     Data = {
         "user": user,
         "contact": contact.id
@@ -134,10 +140,12 @@ def CreateContact(req):
         data={"user": contact.id, "contact": user})
     contactserializer = ContactSerializer(data=Data)
     if contactserializer.is_valid():
+
         contactserializer.save()
     if contactserializers.is_valid():
-        contactserializers.save()
-        return Response("Contact added succesfully")
+        if Data["user"] != Data["contact"]:
+            contactserializers.save()
+            return Response("Contact added succesfully")
     return Response(contactserializer.errors)
 
 
@@ -146,11 +154,14 @@ def CreateContact(req):
 @permission_classes([IsAuthenticated])
 def EditProfile(req):
     user = get_object_or_404(
-        User, username=req.user.username).id
-    profile = get_object_or_404(Profile, user=user)
-    req.data["user"] = user
-    profile = ProfileSerializer(instance=profile, data=req.data)
+        User, username=req.user.username)
+    profiles = get_object_or_404(Profile, user=user.id)
+    profiles.email = req.user.email
+    req.data["user"] = user.id
+    profile = ProfileSerializer(instance=profiles, data=req.data)
     if profile.is_valid():
         profile.save()
+        userprofile = ProfileSerializer(profiles, many=False)
+        pusher_client.trigger('chat', 'profile', userprofile.data)
         return Response("Successful")
     return Response(profile.errors)

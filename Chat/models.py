@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 
 
 class Chat(models.Model):
-    message = models.TextField(max_length=99999999999999999999999999999)
+    message = models.TextField(
+        max_length=99999999999999999999999999999, blank=True)
+    img = models.ImageField(blank=True, upload_to="chatimg/%y")
     sender = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="sender")
     reciever = models.ForeignKey(
@@ -40,3 +42,22 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=100)
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="group_admin")
+    participant = models.ManyToManyField(User)
+    groupProfile = models.ImageField(
+        upload_to="groupimg/%y", default="default.png")
+    date_created = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    
+class GroupChat(models.Model):
+    message = models.TextField(max_length=1000000000)
+    sender = models.ForeignKey(User,on_delete=models.CASCADE),
+    time = models.TimeField(auto_now_add=True)
+    
