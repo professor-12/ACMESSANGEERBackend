@@ -162,6 +162,6 @@ def EditProfile(req):
     if profile.is_valid():
         profile.save()
         userprofile = ProfileSerializer(profiles, many=False)
-        pusher_client.trigger('chat', 'profile', userprofile.data)
+        pusher_client.trigger(u'chat', u'profile', userprofile.data)
         return Response("Successful")
     return Response(profile.errors)

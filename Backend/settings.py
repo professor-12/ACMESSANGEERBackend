@@ -78,11 +78,12 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'Backend.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+#  https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -92,13 +93,10 @@ DATABASES = {
     }
 }
 
-database_url = os.environ.get("DATABASE_URL")
-print(os.environ.get("DATABASE_URL"))
-DATABASES['default'] = dj_database_url.parse(
-    "postgres://acm_user:sjclWGxSZFVG09vuepOwDu1RYCiDfVXd@dpg-clav6pmg1b2c73a8lmh0-a.oregon-postgres.render.com/acm")
+# DATABASES['default'] = dj_database_url.parse(
+#     "postgres://acm_user:sjclWGxSZFVG09vuepOwDu1RYCiDfVXd@dpg-clav6pmg1b2c73a8lmh0-a.oregon-postgres.render.com/acm")
 
 # postgres://acm_user:sjclWGxSZFVG09vuepOwDu1RYCiDfVXd@dpg-clav6pmg1b2c73a8lmh0-a.oregon-postgres.render.com/acm
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
