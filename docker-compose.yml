@@ -1,0 +1,20 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                DJANGO_SETTINGS_MODULE: "Backend.settings"
+        volumes:
+            - .:/django
+        user: root
+        entrypoint:
+            - ./docker/web-entrypoint.sh
+        ports:
+            - "8000:8000"
+        networks:
+            - app-network
+
+networks:
+  app-network:
+    name: app-network
