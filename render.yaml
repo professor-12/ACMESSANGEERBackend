@@ -7,4 +7,4 @@ services:
   - type: web
     name: mysite
     runtime: python
-    startCommand: "python manage.py runserver"
+    startCommand: "python src/manage.py runserver"
