@@ -52,12 +52,17 @@ class Group(models.Model):
     groupProfile = models.ImageField(
         upload_to="groupimg/%y", default="default.png")
     date_created = models.DateField(auto_now_add=True)
+    admin = models.ManyToManyField(to=User, related_name='admin')
 
     def __str__(self):
         return self.name
-    
+
+
 class GroupChat(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     message = models.TextField(max_length=1000000000)
-    sender = models.ForeignKey(User,on_delete=models.CASCADE),
-    time = models.TimeField(auto_now_add=True)
-    
+    senders = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    timesent = models.TimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.group.name

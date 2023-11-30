@@ -24,14 +24,14 @@ def Signup(req):
         profileData = {
             "displayname": user.username,
             "user": user.pk,
-            "email": "",
+            "email": req.data["email"],
             "user_profile": req.data["username"],
         }
         profile = ProfileSerializer(data=profileData)
         if profile.is_valid():
             profile.save()
         token = Token.objects.create(user=user)
-        response = {"token": token.key, "user": serializedData.data}
+        response = {"token": token.key, "user": serializedData.data , "profile": profile.data }
         return Response(response)
     return Response({"error": serializedData.errors})
 
@@ -42,8 +42,11 @@ def Login(req):
     if not user.check_password(req.data["password"]):
         return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     token, created = Token.objects.get_or_create(user=user)
+    profile = get_object_or_404(Profile,user=user)
+    Profile_serializer = ProfileSerializer(profile,many=False)
     serializedData = UserSerialiser(instance=user, many=False)
-    response = {"token": token.key, "user": serializedData.data}
+    response = {"token": token.key,
+                "user": serializedData.data, "profile":Profile_serializer.data}
     return Response(response)
 
 
@@ -65,8 +68,7 @@ def POSTChatApi(req):
 
         if serializedData.is_valid():
             serializedData.save()
-            message = Chat.objects.filter(Q(sender=req.data["sender"], reciever=req.data["reciever"]) | Q(
-                sender=req.data["reciever"], reciever=req.data["sender"])).order_by('date')
+            message = Chat.objects.filter(Q(sender=req.data["sender"], reciever=req.data["reciever"]) | Q(sender=req.data["reciever"], reciever=req.data["sender"])).order_by('date')
             const = ChatSerializer(message, many=True)
             pusher_client.trigger(u'chat', u'message',
                                   const.data)
